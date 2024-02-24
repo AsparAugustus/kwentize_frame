@@ -1,8 +1,34 @@
 import { FrameRequest, getFrameMessage, getFrameHtmlResponse } from '@coinbase/onchainkit/frame';
 import { NextRequest, NextResponse } from 'next/server';
 import { NEXT_PUBLIC_URL } from '../../config';
+import { NeynarAPIClient, isApiErrorResponse } from "@neynar/nodejs-sdk";
+import axios from "axios";
 
+const apiKey = process.env.NEYNAR_APIKEY;
+if (apiKey) {
+  const client = new NeynarAPIClient(apiKey);
+  // Use client
+} else {
+  // Handle the missing API key case, e.g., throw an error or log a warning
+  console.error("No API key found")
+}
 async function getResponse(req: NextRequest): Promise<NextResponse> {
+
+  const response = axios.post('https://api.neynar.com/v2/farcaster/frame/validate', {
+    cast_reaction_context: true,
+    follow_context: false
+  }, {
+    headers: {
+      'accept': 'application/json',
+      'api_key': 'NEYNAR_API_DOCS',
+      'content-type': 'application/json'
+    }
+  })
+
+  console.log(response)
+
+
+
   let accountAddress: string | undefined = '';
   let text: string | undefined = '';
 
