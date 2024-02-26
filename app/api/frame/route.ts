@@ -56,7 +56,7 @@ function getResponse(type: ResponseType) {
           },
         ],
         image: {
-          src: `${NEXT_PUBLIC_URL}/park-1.png`,
+          src: `${NEXT_PUBLIC_URL}/${IMAGE}`,
         },
         postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
       }),
