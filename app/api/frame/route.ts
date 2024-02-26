@@ -50,19 +50,19 @@ function getResponse(type: ResponseType) {
 
     console.log(IMAGE)
 
-    return new NextResponse(
-      getFrameHtmlResponse({
-        buttons: [
-          {
-            label: `Story: 🌲🌲`,
-          },
-        ],
-        image: {
-          src: `${NEXT_PUBLIC_URL}/${IMAGE}`,
-        },
-        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-      }),
-    );
+    // return new NextResponse(
+    //   getFrameHtmlResponse({
+    //     buttons: [
+    //       {
+    //         label: `Story: 🌲🌲`,
+    //       },
+    //     ],
+    //     image: {
+    //       src: `${NEXT_PUBLIC_URL}/${IMAGE}`,
+    //     },
+    //     postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+    //   }),
+    // );
 
 
 
