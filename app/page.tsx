@@ -13,8 +13,7 @@ const frameMetadata = getFrameMetadata({
       target: 'https://www.google.com',
     },
     {
-      label: 'Fetch user',
-      action: 'post_redirect',
+      label: 'Fetch user'
     },
   ],
   image: {
