@@ -5,23 +5,17 @@ import { NEXT_PUBLIC_URL } from './config';
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
-      label: 'Story time!',
+      label: 'Kwentize!',
     },
     {
       action: 'link',
-      label: 'Link to Google',
-      target: 'https://www.google.com',
-    },
-    {
-      label: 'Fetch user'
-    },
+      label: 'Start trading',
+      target: 'https://kwenta.eth.limo/?ref=kwendroid',
+    }
   ],
   image: {
-    src: `${NEXT_PUBLIC_URL}/park-3.png`,
+    src: `${NEXT_PUBLIC_URL}/kwentize.png`,
     aspectRatio: '1:1',
-  },
-  input: {
-    text: 'Tell me a boat story',
   },
   postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
 });
