@@ -33,7 +33,6 @@ async function getResponse(req: NextRequest): Promise<NextResponse> {
     .then(response => console.log(response))
     .catch(err => console.error(err));
 
-  const string_response = response.json()
 
 
   let accountAddress: string | undefined = '';
