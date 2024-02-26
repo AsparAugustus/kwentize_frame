@@ -18,6 +18,14 @@ enum ResponseType {
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
 export const dynamic = 'force-dynamic';
 
+let user = {
+  custody_address: null,
+  username: null,
+  display_name: null,
+  pfp_url: null,
+  
+}
+
 
 export async function POST(req: NextRequest): Promise<Response> {
 
@@ -30,6 +38,21 @@ export async function POST(req: NextRequest): Promise<Response> {
     console.error(status);
     throw new Error('Invalid frame request');
   }
+
+  //need to fetch user's
+  //1. custody address? verified addresses?
+  //2. username
+  //3. display_name
+  //4. pfp url
+
+  user.custody_address = status.action.interactor.custody_address
+  user.username = status.action.interactor.username
+  user.display_name = status.action.interactor.display_name
+  user.pfp_url = status.action.interactor.pfp_url
+
+  //follower count? following count?
+
+
 
   return getResponse(ResponseType.SUCCESS);
 
@@ -50,32 +73,38 @@ function getResponse(type: ResponseType) {
 
     console.log(IMAGE)
 
-    // return new NextResponse(
-    //   getFrameHtmlResponse({
-    //     buttons: [
-    //       {
-    //         label: `Story: 🌲🌲`,
-    //       },
-    //     ],
-    //     image: {
-    //       src: `${NEXT_PUBLIC_URL}/${IMAGE}`,
-    //     },
-    //     postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-    //   }),
-    // );
+    return new NextResponse(
+      getFrameHtmlResponse({
+        buttons: [
+          {
+            label: `${user.custody_address}`,
+          },
+          {
+            label: `${user.display_name}`,
+          },
+          {
+            label: `${user.username}`,
+          }
+        ],
+        image: {
+          src: `${user.pfp_url}`,
+        },
+        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+      }),
+    );
 
 
 
-  return new NextResponse(`<!DOCTYPE html><html><head>
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="${NEXT_PUBLIC_URL}/${IMAGE}" />
-    <meta property="fc:frame:post_url" content="${NEXT_PUBLIC_URL}/api/frame" />
-    ${ 
-      shouldRetry
-        ? `<meta property="fc:frame:button:1" content="Try again" />`
-        : ''
-    }
-  </head></html>`);
+  // return new NextResponse(`<!DOCTYPE html><html><head>
+  //   <meta property="fc:frame" content="vNext" />
+  //   <meta property="fc:frame:image" content="${NEXT_PUBLIC_URL}/${IMAGE}" />
+  //   <meta property="fc:frame:post_url" content="${NEXT_PUBLIC_URL}/api/frame" />
+  //   ${ 
+  //     shouldRetry
+  //       ? `<meta property="fc:frame:button:1" content="Try again" />`
+  //       : ''
+  //   }
+  // </head></html>`);
 }
 
 
