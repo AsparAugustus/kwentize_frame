@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'https://github.com/AsparAugustus',
     description: 'LFG',
-    images: [`${NEXT_PUBLIC_URL}/park-1.png`],
+    images: [`${NEXT_PUBLIC_URL}/kwentize.png`],
   },
   other: {
     ...frameMetadata,
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <h1>AsparAugustus</h1>
+      <h1>https://github.com/AsparAugustus</h1>
     </>
   );
 }
