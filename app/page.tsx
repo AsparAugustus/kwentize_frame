@@ -9,7 +9,7 @@ const frameMetadata = getFrameMetadata({
     },
     {
       action: 'link',
-      label: 'Start trading',
+      label: 'Start trading!',
       target: 'https://kwenta.eth.limo/?ref=kwendroid',
     }
   ],
