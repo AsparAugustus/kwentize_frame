@@ -47,11 +47,28 @@ function getResponse(type: ResponseType) {
   }[type];
   const shouldRetry =
     type === ResponseType.ERROR || type === ResponseType.RECAST;
+
+    return new NextResponse(
+      getFrameHtmlResponse({
+        buttons: [
+          {
+            label: `Story: 🌲🌲`,
+          },
+        ],
+        image: {
+          src: `${NEXT_PUBLIC_URL}/park-1.png`,
+        },
+        postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+      }),
+    );
+
+
+
   return new NextResponse(`<!DOCTYPE html><html><head>
     <meta property="fc:frame" content="vNext" />
     <meta property="fc:frame:image" content="${NEXT_PUBLIC_URL}/${IMAGE}" />
     <meta property="fc:frame:post_url" content="${NEXT_PUBLIC_URL}/api/frame" />
-    ${
+    ${ 
       shouldRetry
         ? `<meta property="fc:frame:button:1" content="Try again" />`
         : ''
