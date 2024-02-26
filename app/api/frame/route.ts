@@ -48,6 +48,8 @@ function getResponse(type: ResponseType) {
   const shouldRetry =
     type === ResponseType.ERROR || type === ResponseType.RECAST;
 
+    console.log(IMAGE)
+
     return new NextResponse(
       getFrameHtmlResponse({
         buttons: [
