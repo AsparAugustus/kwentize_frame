@@ -4,85 +4,81 @@ import { NEXT_PUBLIC_URL } from '../../config';
 import { NeynarAPIClient, isApiErrorResponse } from "@neynar/nodejs-sdk";
 import axios from "axios";
 
-const apiKey = process.env.NEYNAR_APIKEY;
-if (apiKey) {
-  const client = new NeynarAPIClient(apiKey);
-  // Use client
-} else {
-  // Handle the missing API key case, e.g., throw an error or log a warning
-  console.error("No API key found")
+enum ResponseType {
+  SUCCESS,
+  RECAST,
+  ALREADY_MINTED,
+  NO_ADDRESS,
+  OUT_OF_GAS,
+  ERROR,
 }
-async function getResponse(req: NextRequest): Promise<NextResponse> {
+
+
+
+const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
+export const dynamic = 'force-dynamic';
+
+
+export async function POST(req: NextRequest): Promise<Response> {
+
+  const body: { trustedData?: { messageBytes?: string } } = await req.json();
+
+  // Check if frame request is valid
+  const status = await validateFrameRequest(body.trustedData?.messageBytes);
+
+  if (!status?.valid) {
+    console.error(status);
+    throw new Error('Invalid frame request');
+  }
+
+  return getResponse(ResponseType.SUCCESS);
+
+}
+
+
+function getResponse(type: ResponseType) {
+  const IMAGE = {
+    [ResponseType.SUCCESS]: 'status/success.png',
+    [ResponseType.RECAST]: 'status/recast.png',
+    [ResponseType.ALREADY_MINTED]: 'status/already-minted.png',
+    [ResponseType.NO_ADDRESS]: 'status/no-address.png',
+    [ResponseType.OUT_OF_GAS]: 'status/out-of-gas.png',
+    [ResponseType.ERROR]: 'status/error.png',
+  }[type];
+  const shouldRetry =
+    type === ResponseType.ERROR || type === ResponseType.RECAST;
+  return new NextResponse(`<!DOCTYPE html><html><head>
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="${NEXT_PUBLIC_URL}/${IMAGE}" />
+    <meta property="fc:frame:post_url" content="${NEXT_PUBLIC_URL}/api/frame" />
+    ${
+      shouldRetry
+        ? `<meta property="fc:frame:button:1" content="Try again" />`
+        : ''
+    }
+  </head></html>`);
+}
+
+
+
+async function validateFrameRequest(data: string | undefined) {
+  if (!NEYNAR_API_KEY) throw new Error('NEYNAR_API_KEY is not set');
+  if (!data) throw new Error('No data provided');
 
   const options = {
     method: 'POST',
     headers: {
       accept: 'application/json',
-      api_key: 'NEYNAR_API_DOCS',
-      'content-type': 'application/json'
+      api_key: NEYNAR_API_KEY,
+      'content-type': 'application/json',
     },
-    body: JSON.stringify({
-      cast_reaction_context: true,
-      follow_context: false,
-      message_bytes_in_hex: '0a49080d1085940118f6a6a32e20018201390a1a86db69b3ffdf6ab8acb6872b69ccbe7eb6a67af7ab71e95aa69f10021a1908ef011214237025b322fd03a9ddc7ec6c078fb9c56d1a72111214e3d88aeb2d0af356024e0c693f31c11b42c76b721801224043cb2f3fcbfb5dafce110e934b9369267cf3d1aef06f51ce653dc01700fc7b778522eb7873fd60dda4611376200076caf26d40a736d3919ce14e78a684e4d30b280132203a66717c82d728beb3511b05975c6603275c7f6a0600370bf637b9ecd2bd231e'
-    })
+    body: JSON.stringify({ message_bytes_in_hex: data }),
   };
-  
-  const response = fetch('https://api.neynar.com/v2/farcaster/frame/validate', options)
-    .then(response => response.json())
-    .then(response => console.log(response))
-    .catch(err => console.error(err));
 
-  const string_response = response.toString()
-
-
-  let accountAddress: string | undefined = '';
-  let text: string | undefined = '';
-
-  const body: FrameRequest = await req.json();
-  const { isValid, message } = await getFrameMessage(body, { neynarApiKey: 'NEYNAR_ONCHAIN_KIT' });
-
-  if (isValid) {
-    accountAddress = message.interactor.verified_accounts[0];
-  }
-
-  if (message?.input) {
-    text = message.input;
-  }
-
-  // if (message?.button === 3) {
-  //   return NextResponse.redirect(
-  //     'https://www.google.com/search?q=cute+dog+pictures&tbm=isch&source=lnms',
-  //     { status: 302 },
-  //   );
-  // }
-
- 
-
-  if (message?.button === 3) {
-    return NextResponse.redirect(
-      `https://${string_response}.com`,
-      { status: 302 },
-    );
-  }
-
-  return new NextResponse(
-    getFrameHtmlResponse({
-      buttons: [
-        {
-          label: `Story: ${text} 🌲🌲`,
-        },
-      ],
-      image: {
-        src: `${NEXT_PUBLIC_URL}/park-1.png`,
-      },
-      postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
-    }),
-  );
+  return await fetch(
+    'https://api.neynar.com/v2/farcaster/frame/validate',
+    options,
+  )
+    .then((response) => response.json())
+    .catch((err) => console.error(err));
 }
-
-export async function POST(req: NextRequest): Promise<Response> {
-  return getResponse(req);
-}
-
-export const dynamic = 'force-dynamic';
